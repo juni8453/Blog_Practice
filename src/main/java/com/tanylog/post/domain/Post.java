@@ -6,9 +6,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
 public class Post {
 
@@ -21,6 +24,7 @@ public class Post {
   @Lob
   private String content;
 
+  @Builder
   public Post(String title, String content) {
     this.title = title;
     this.content = content;
