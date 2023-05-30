@@ -18,9 +18,8 @@ public class PostApiController {
   private final PostService postService;
 
   @PostMapping("/api/posts")
-  public Map<String, String> post(@RequestBody @Valid PostCreate postCreate) {
+  public void post(@RequestBody @Valid PostCreate postCreate) {
     log.info("postRequest={}", postCreate.toString());
-
-    return Map.of();
+    postService.write(postCreate);
   }
 }
