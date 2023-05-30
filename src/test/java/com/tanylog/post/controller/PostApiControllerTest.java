@@ -1,6 +1,7 @@
 package com.tanylog.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -93,5 +95,30 @@ class PostApiControllerTest {
 
     // then
     assertThat(postRepository.count()).isEqualTo(1L);
+  }
+
+  @Test
+  @DisplayName("게시글 ID 로 해당 게시글을 조회한다.")
+  void read() throws Exception {
+    // given
+    PostCreate postCreate = PostCreate.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    Post post = Post.builder()
+        .title(postCreate.getTitle())
+        .content(postCreate.getContent())
+        .build();
+
+    Post savePost = postRepository.save(post);
+
+    // when & then
+    mockMvc.perform(get("/api/posts/" + savePost.getId())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title").value(savePost.getTitle()))
+        .andExpect(jsonPath("$.content").value(savePost.getContent()))
+        .andDo(print());
   }
 }
