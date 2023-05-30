@@ -3,12 +3,8 @@ package com.tanylog.post.controller.request;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
-@ToString
 @Getter
-@Setter
 public class PostCreate {
 
   @NotBlank(message = "title 을 입력해주세요.")
