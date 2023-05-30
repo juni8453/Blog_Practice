@@ -28,6 +28,9 @@ class PostApiControllerTest {
   @Autowired
   private PostRepository postRepository;
 
+  @Autowired
+  private ObjectMapper mapper;
+
   @BeforeEach
   void clean() {
     postRepository.deleteAll();
@@ -43,8 +46,6 @@ class PostApiControllerTest {
         .content(content)
         .build();
 
-    ObjectMapper mapper = new ObjectMapper();
-
     mockMvc.perform(post("/api/posts")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(postCreate)))
@@ -55,10 +56,15 @@ class PostApiControllerTest {
   @Test
   @DisplayName("/api/posts 요청 시 title 값은 필수다.")
   void 게시글_생성_실패() throws Exception {
+    // given
+    String content = "내용입니다.";
+    PostCreate postCreate = PostCreate.builder()
+        .content(content)
+        .build();
 
     mockMvc.perform(post("/api/posts")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"title\": null, \"content\": \"내용입니다.\"}"))
+            .content(mapper.writeValueAsString(postCreate)))
 
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value("400"))
@@ -70,9 +76,17 @@ class PostApiControllerTest {
   @Test
   @DisplayName("/api/posts 요청 시 DB 에 값이 저장된다.")
   void test3() throws Exception {
+    // given
+    String title = "제목입니다.";
+    String content = "내용입니다.";
+    PostCreate postCreate = PostCreate.builder()
+        .title(title)
+        .content(content)
+        .build();
+
     mockMvc.perform(post("/api/posts")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"title\": \"제목입니다.\", \"content\": \"내용입니다.\"}"))
+            .content(mapper.writeValueAsString(postCreate)))
 
         .andExpect(status().isOk())
         .andDo(print());
