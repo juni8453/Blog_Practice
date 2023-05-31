@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanylog.post.controller.request.PostCreate;
-import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
+import com.tanylog.post.service.PostService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,6 +26,9 @@ class PostApiControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private PostService postService;
 
   @Autowired
   private PostRepository postRepository;
@@ -52,6 +55,7 @@ class PostApiControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(postCreate)))
         .andExpect(status().isOk())
+
         .andDo(print());
   }
 
@@ -72,6 +76,7 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.code").value("400"))
         .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
         .andExpect(jsonPath("$.validation.title").value("title 을 입력해주세요."))
+
         .andDo(print());
   }
 
@@ -89,8 +94,8 @@ class PostApiControllerTest {
     mockMvc.perform(post("/api/posts")
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(postCreate)))
-
         .andExpect(status().isOk())
+
         .andDo(print());
 
     // then
@@ -106,19 +111,41 @@ class PostApiControllerTest {
         .content("content")
         .build();
 
-    Post post = Post.builder()
-        .title(postCreate.getTitle())
-        .content(postCreate.getContent())
-        .build();
-
-    Post savePost = postRepository.save(post);
+    postService.write(postCreate);
 
     // when & then
-    mockMvc.perform(get("/api/posts/" + savePost.getId())
+    mockMvc.perform(get("/api/posts/" + 1L)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.title").value(savePost.getTitle()))
-        .andExpect(jsonPath("$.content").value(savePost.getContent()))
+        .andExpect(jsonPath("$.title").value("title"))
+        .andExpect(jsonPath("$.content").value("content"))
+
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("모든 게시글을 조회한다.")
+  void readAll() throws Exception {
+    PostCreate postCreateA = PostCreate.builder()
+        .title("titleA")
+        .content("contentB")
+        .build();
+
+    PostCreate postCreateB = PostCreate.builder()
+        .title("titleB")
+        .content("contentB")
+        .build();
+
+    postService.write(postCreateA);
+    postService.write(postCreateB);
+
+    // when & then
+    mockMvc.perform(get("/api/posts")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.postReads[0].id").value(1L))
+        .andExpect(jsonPath("$.postReads[1].id").value(2L))
+
         .andDo(print());
   }
 }

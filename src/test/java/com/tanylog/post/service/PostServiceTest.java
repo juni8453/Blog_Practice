@@ -2,10 +2,11 @@ package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.tanylog.post.controller.request.PostCreate;
 import com.tanylog.post.controller.response.PostRead;
+import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,13 @@ class PostServiceTest {
   @Test
   void 게시글_생성() {
     // given
-    PostCreate postCreate = PostCreate.builder()
+    Post post = Post.builder()
         .title("title")
         .content("content")
         .build();
 
     // when
-    postService.write(postCreate);
+    postRepository.save(post);
 
     // then
     assertThat(postRepository.count()).isEqualTo(1L);
@@ -47,21 +48,42 @@ class PostServiceTest {
   @Test
   void 게시글_단건조회() {
     // given
-    Long PostId = 1L;
+    Long postId = 1L;
 
-    PostCreate postCreate = PostCreate.builder()
+    Post post = Post.builder()
         .title("title")
         .content("content")
         .build();
 
     // when
-    postService.write(postCreate);
-    PostRead findPost = postService.read(PostId);
+    postRepository.save(post);
+    PostRead findPost = postService.read(postId);
 
     // then
     assertThat(findPost.getTitle()).isEqualTo("title");
     assertThat(findPost.getContent()).isEqualTo("content");
+  }
 
+  @Test
+  void 게시글_전체조회() {
+    postRepository.saveAll(List.of(
+        Post.builder()
+            .title("titleA")
+            .content("contentA")
+            .build(),
 
+        Post.builder()
+            .title("titleB")
+            .content("contentB")
+            .build()
+    ));
+
+    // when
+    PostReads postReads = postService.readAll();
+
+    // then
+    assertThat(postReads.getPostReads().size()).isEqualTo(2);
+    assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("titleA");
+    assertThat(postReads.getPostReads().get(1).getTitle()).isEqualTo("titleB");
   }
 }
