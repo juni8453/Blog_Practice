@@ -2,6 +2,7 @@ package com.tanylog.post.controller;
 
 import com.tanylog.post.controller.request.PostCreate;
 import com.tanylog.post.controller.response.PostRead;
+import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,10 @@ public class PostApiController {
   public PostRead read(@PathVariable Long postId) {
     log.info("postId={}", postId);
     return postService.read(postId);
+  }
+
+  @GetMapping("/api/posts")
+  public PostReads readAll() {
+    return postService.readAll();
   }
 }
