@@ -1,16 +1,20 @@
 package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 @SpringBootTest
 class PostServiceTest {
@@ -64,26 +68,27 @@ class PostServiceTest {
     assertThat(findPost.getContent()).isEqualTo("content");
   }
 
-  @Test
-  void 게시글_전체조회() {
-    postRepository.saveAll(List.of(
-        Post.builder()
-            .title("titleA")
-            .content("contentA")
-            .build(),
 
-        Post.builder()
-            .title("titleB")
-            .content("contentB")
-            .build()
-    ));
+  @Test
+  void 게시글_1페이지_조회() {
+    // given
+    List<Post> posts = IntStream.range(1, 31)
+        .mapToObj(i -> Post.builder()
+            .title("title - " + i)
+            .content("content - " + i)
+            .build())
+        .collect(Collectors.toList());
+
+    postRepository.saveAll(posts);
+
+    PageRequest pageable = PageRequest.of(1, 5);
 
     // when
-    PostReads postReads = postService.readAll();
+    PostReads postReads = postService.readAll(pageable);
 
     // then
-    assertThat(postReads.getPostReads().size()).isEqualTo(2);
-    assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("titleA");
-    assertThat(postReads.getPostReads().get(1).getTitle()).isEqualTo("titleB");
+    assertThat(postReads.getPostReads().size()).isEqualTo(5);
+    assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("title - 1");
+    assertThat(postReads.getPostReads().get(4).getTitle()).isEqualTo("title - 5");
   }
 }

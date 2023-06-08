@@ -1,6 +1,7 @@
 package com.tanylog.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -9,8 +10,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import com.tanylog.post.service.PostService;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -124,27 +129,25 @@ class PostApiControllerTest {
   }
 
   @Test
-  @DisplayName("모든 게시글을 조회한다.")
+  @DisplayName("첫 번째 게시글 페이지를 조회한다.")
   void readAll() throws Exception {
-    PostCreate postCreateA = PostCreate.builder()
-        .title("titleA")
-        .content("contentB")
-        .build();
 
-    PostCreate postCreateB = PostCreate.builder()
-        .title("titleB")
-        .content("contentB")
-        .build();
+    // given
+    List<Post> posts = IntStream.range(1, 31)
+        .mapToObj(i -> Post.builder()
+            .title("title - " + i)
+            .content("content - " + i)
+            .build())
+        .collect(Collectors.toList());
 
-    postService.write(postCreateA);
-    postService.write(postCreateB);
+    postRepository.saveAll(posts);
 
     // when & then
-    mockMvc.perform(get("/api/posts")
+    mockMvc.perform(get("/api/posts?page=1")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.postReads.length()", is(5)))
         .andExpect(jsonPath("$.postReads[0].id").value(1L))
-        .andExpect(jsonPath("$.postReads[1].id").value(2L))
 
         .andDo(print());
   }
