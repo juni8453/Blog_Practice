@@ -7,6 +7,7 @@ import com.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,7 @@ public class PostApiController {
   }
 
   @GetMapping("/api/posts")
-  public PostReads readAll() {
-    return postService.readAll();
+  public PostReads readAll(Pageable pageable) {
+    return postService.readAll(pageable);
   }
 }

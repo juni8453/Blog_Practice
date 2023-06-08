@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -38,13 +41,18 @@ public class PostService {
         .build();
   }
 
-  public PostReads readAll() {
-    List<Post> findPosts = postRepository.findAll();
 
-    List<PostRead> postReads = findPosts.stream()
-        .map(PostRead::new)
-        .collect(Collectors.toList());
+  public PostReads readAll(Pageable pageable) {
+    List<PostRead> postRead = postRepository.findAll(pageable)
+        .map(pagePost -> PostRead.builder()
+            .id(pagePost.getId())
+            .title(pagePost.getTitle())
+            .content(pagePost.getContent())
+            .build())
+        .getContent();
 
-    return PostReads.builder().postReads(postReads).build();
+    return PostReads.builder()
+        .postReads(postRead)
+        .build();
   }
 }

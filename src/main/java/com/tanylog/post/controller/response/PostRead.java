@@ -1,6 +1,5 @@
 package com.tanylog.post.controller.response;
 
-import com.tanylog.post.domain.Post;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,11 +15,5 @@ public class PostRead {
     this.id = id;
     this.title = title;
     this.content = content;
-  }
-
-  public PostRead(Post post) {
-    this.id = post.getId();
-    this.title = post.getTitle();
-    this.content = post.getContent();
   }
 }
