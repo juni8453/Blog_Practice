@@ -1,12 +1,14 @@
 package com.tanylog.post.service;
 
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,18 +43,17 @@ public class PostService {
         .build();
   }
 
-
-  public PostReads readAll(Pageable pageable) {
-    List<PostRead> postRead = postRepository.findAll(pageable)
+  public PostReads readAll(PostSearch postSearch) {
+    List<PostRead> postReads = postRepository.readAll(postSearch).stream()
         .map(pagePost -> PostRead.builder()
             .id(pagePost.getId())
             .title(pagePost.getTitle())
             .content(pagePost.getContent())
             .build())
-        .getContent();
+        .collect(Collectors.toList());
 
     return PostReads.builder()
-        .postReads(postRead)
+        .postReads(postReads)
         .build();
   }
 }

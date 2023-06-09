@@ -1,17 +1,19 @@
 package com.tanylog.post.controller;
 
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -33,8 +35,9 @@ public class PostApiController {
     return postService.read(postId);
   }
 
+
   @GetMapping("/api/posts")
-  public PostReads readAll(Pageable pageable) {
-    return postService.readAll(pageable);
+  public PostReads readAll(@ModelAttribute PostSearch postSearch) {
+    return postService.readAll(postSearch);
   }
 }
