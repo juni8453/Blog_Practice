@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -24,9 +23,9 @@ public class PostApiController {
   private final PostService postService;
 
   @PostMapping("/api/posts")
-  public void post(@RequestBody @Valid PostCreate postCreate) {
+  public PostRead post(@RequestBody @Valid PostCreate postCreate) {
     log.info("postRequest={}", postCreate.toString());
-    postService.write(postCreate);
+    return postService.write(postCreate);
   }
 
   @GetMapping("/api/posts/{postId}")

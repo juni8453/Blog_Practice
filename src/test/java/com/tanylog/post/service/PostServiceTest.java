@@ -1,10 +1,8 @@
 package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 
 import com.tanylog.post.controller.request.PostSearch;
-import com.tanylog.post.controller.request.PostSearch.PostSearchBuilder;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
@@ -12,11 +10,12 @@ import com.tanylog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
 
 @SpringBootTest
 class PostServiceTest {
@@ -53,23 +52,19 @@ class PostServiceTest {
 
   @Test
   void 게시글_단건조회() {
-    // given
-    Long postId = 1L;
-
     Post post = Post.builder()
         .title("title")
         .content("content")
         .build();
 
     // when
-    postRepository.save(post);
-    PostRead findPost = postService.read(postId);
+    Post save = postRepository.save(post);
+    PostRead findPost = postService.read(save.getId());
 
     // then
     assertThat(findPost.getTitle()).isEqualTo("title");
     assertThat(findPost.getContent()).isEqualTo("content");
   }
-
 
   @Test
   void 게시글_1페이지_조회() {

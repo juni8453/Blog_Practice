@@ -8,12 +8,8 @@ import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -23,13 +19,19 @@ public class PostService {
 
   private final PostRepository postRepository;
 
-  public void write(PostCreate createPost) {
+  public PostRead write(PostCreate createPost) {
     Post post = Post.builder()
         .title(createPost.getTitle())
         .content(createPost.getContent())
         .build();
 
-    postRepository.save(post);
+    Post savePost = postRepository.save(post);
+
+    return PostRead.builder()
+        .id(savePost.getId())
+        .title(savePost.getTitle())
+        .content(savePost.getContent())
+        .build();
   }
 
   public PostRead read(Long postId) {

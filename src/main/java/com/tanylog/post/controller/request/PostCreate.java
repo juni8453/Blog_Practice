@@ -3,7 +3,9 @@ package com.tanylog.post.controller.request;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Getter
 public class PostCreate {
 

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.domain.Post;
 import com.tanylog.post.repository.PostRepository;
 import com.tanylog.post.service.PostService;
@@ -116,10 +117,10 @@ class PostApiControllerTest {
         .content("content")
         .build();
 
-    postService.write(postCreate);
+    PostRead postRead = postService.write(postCreate);
 
     // when & then
-    mockMvc.perform(get("/api/posts/" + 1L)
+    mockMvc.perform(get("/api/posts/" + postRead.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("title"))
