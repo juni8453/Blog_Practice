@@ -3,6 +3,8 @@ package com.tanylog.post.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 
+import com.tanylog.post.controller.request.PostSearch;
+import com.tanylog.post.controller.request.PostSearch.PostSearchBuilder;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
@@ -72,7 +74,7 @@ class PostServiceTest {
   @Test
   void 게시글_1페이지_조회() {
     // given
-    List<Post> posts = IntStream.range(1, 31)
+    List<Post> posts = IntStream.range(0, 20)
         .mapToObj(i -> Post.builder()
             .title("title - " + i)
             .content("content - " + i)
@@ -81,14 +83,16 @@ class PostServiceTest {
 
     postRepository.saveAll(posts);
 
-    PageRequest pageable = PageRequest.of(1, 5);
+    PostSearch postSearch = PostSearch.builder()
+        .page(1)
+        .size(10)
+        .build();
 
     // when
-    PostReads postReads = postService.readAll(pageable);
+    PostReads postReads = postService.readAll(postSearch);
 
     // then
-    assertThat(postReads.getPostReads().size()).isEqualTo(5);
-    assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("title - 1");
-    assertThat(postReads.getPostReads().get(4).getTitle()).isEqualTo("title - 5");
+    assertThat(postReads.getPostReads().size()).isEqualTo(10);
+    assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("title - 19");
   }
 }

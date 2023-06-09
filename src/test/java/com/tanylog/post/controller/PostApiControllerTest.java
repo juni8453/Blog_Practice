@@ -133,7 +133,7 @@ class PostApiControllerTest {
   void readAll() throws Exception {
 
     // given
-    List<Post> posts = IntStream.range(1, 31)
+    List<Post> posts = IntStream.range(0, 20)
         .mapToObj(i -> Post.builder()
             .title("title - " + i)
             .content("content - " + i)
@@ -143,11 +143,35 @@ class PostApiControllerTest {
     postRepository.saveAll(posts);
 
     // when & then
-    mockMvc.perform(get("/api/posts?page=1")
+    mockMvc.perform(get("/api/posts?page=1&size=10")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.postReads.length()", is(5)))
-        .andExpect(jsonPath("$.postReads[0].id").value(1L))
+        .andExpect(jsonPath("$.postReads.length()", is(10)))
+        .andExpect(jsonPath("$.postReads[0].title").value("title - 19"))
+
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+  void readAll_page0() throws Exception {
+
+    // given
+    List<Post> posts = IntStream.range(0, 20)
+        .mapToObj(i -> Post.builder()
+            .title("title - " + i)
+            .content("content - " + i)
+            .build())
+        .collect(Collectors.toList());
+
+    postRepository.saveAll(posts);
+
+    // when & then
+    mockMvc.perform(get("/api/posts?page=0&size=10")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.postReads.length()", is(10)))
+        .andExpect(jsonPath("$.postReads[0].title").value("title - 19"))
 
         .andDo(print());
   }
