@@ -1,6 +1,7 @@
 package com.tanylog.post.controller;
 
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,9 +36,13 @@ public class PostApiController {
     return postService.read(postId);
   }
 
-
   @GetMapping("/api/posts")
   public PostReads readAll(@ModelAttribute PostSearch postSearch) {
     return postService.readAll(postSearch);
+  }
+
+  @PatchMapping("/api/posts/{postId}")
+  public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
+    postService.edit(postId, postEdit);
   }
 }

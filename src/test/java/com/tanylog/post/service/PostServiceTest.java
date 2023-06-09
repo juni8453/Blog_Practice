@@ -1,7 +1,9 @@
 package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 
+import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
@@ -58,8 +60,8 @@ class PostServiceTest {
         .build();
 
     // when
-    Post save = postRepository.save(post);
-    PostRead findPost = postService.read(save.getId());
+    postRepository.save(post);
+    PostRead findPost = postService.read(post.getId());
 
     // then
     assertThat(findPost.getTitle()).isEqualTo("title");
@@ -89,5 +91,57 @@ class PostServiceTest {
     // then
     assertThat(postReads.getPostReads().size()).isEqualTo(10);
     assertThat(postReads.getPostReads().get(0).getTitle()).isEqualTo("title - 19");
+  }
+
+  @Test
+  void 게시글_제목_수정() {
+    // given
+    Post post = Post.builder()
+        .title("수정 전 title")
+        .content("수정 전 content")
+        .build();
+
+    Post save = postRepository.save(post);
+
+    PostEdit edit = PostEdit.builder()
+        .title("수정 후 title")
+        .content(null)
+        .build();
+
+    // when
+    postService.edit(save.getId(), edit);
+
+    // then
+    Post edited = postRepository.findById(save.getId())
+        .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + save.getId()));
+
+    assertThat(edited.getTitle()).isEqualTo("수정 후 title");
+    assertThat(edited.getContent()).isEqualTo("수정 전 content");
+  }
+
+  @Test
+  void 게시글_내용_수정() {
+    // given
+    Post post = Post.builder()
+        .title("수정 전 title")
+        .content("수정 전 content")
+        .build();
+
+    Post save = postRepository.save(post);
+
+    PostEdit edit = PostEdit.builder()
+        .title("수정 전 title")
+        .content("수정 후 content")
+        .build();
+
+    // when
+    postService.edit(save.getId(), edit);
+
+    // then
+    Post edited = postRepository.findById(save.getId())
+        .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다. id=" + save.getId()));
+
+    assertThat(edited.getTitle()).isEqualTo("수정 전 title");
+    assertThat(edited.getContent()).isEqualTo("수정 후 content");
   }
 }

@@ -1,16 +1,20 @@
 package com.tanylog.post.service;
 
 import com.tanylog.post.controller.request.PostCreate;
+import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
 import com.tanylog.post.controller.response.PostReads;
 import com.tanylog.post.domain.Post;
+import com.tanylog.post.domain.PostEditor;
+import com.tanylog.post.domain.PostEditor.PostEditorBuilder;
 import com.tanylog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -57,5 +61,21 @@ public class PostService {
     return PostReads.builder()
         .postReads(postReads)
         .build();
+  }
+
+  @Transactional
+  public void edit(Long postId, PostEdit postEdit) {
+    Post findPost = postRepository.findById(postId)
+        .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글입니다."));
+
+    // 결론) 최초 builder 호출 시점에 null 체크 해줘야한다.
+    PostEditorBuilder postEditorBuilder = findPost.toEditor();
+
+    PostEditor postEditor = postEditorBuilder
+        .title(postEdit.getTitle())
+        .content(postEdit.getContent())
+        .build();
+
+    findPost.edit(postEditor);
   }
 }
