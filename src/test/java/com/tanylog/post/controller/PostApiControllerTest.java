@@ -2,10 +2,10 @@ package com.tanylog.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,7 +28,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -91,6 +90,23 @@ class PostApiControllerTest {
   }
 
   @Test
+  @DisplayName("게시글 작성 - 제목에 '바보' 는 포함될 수 없다.")
+  void 게시글_생성_실패_제목_검증() throws Exception {
+    // given
+    PostCreate postCreate = PostCreate.builder()
+        .title("나는 바보입니다.")
+        .content("content")
+        .build();
+
+    mockMvc.perform(post("/api/posts")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(postCreate)))
+
+        .andExpect(status().isBadRequest())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("/api/posts 요청 시 DB 에 값이 저장된다.")
   void test3() throws Exception {
     // given
@@ -135,6 +151,29 @@ class PostApiControllerTest {
         .andExpect(jsonPath("$.title").value("title"))
         .andExpect(jsonPath("$.content").value("content"))
 
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("게시글 조회 - 존재하지 않는 게시글 조회")
+  void 게시글_조회_실패() throws Exception {
+    // given
+    Post post = Post.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    PostCreate postCreate = PostCreate.builder()
+        .title(post.getTitle())
+        .content(post.getContent())
+        .build();
+
+    PostRead postRead = postService.write(postCreate);
+
+    // when & then
+    mockMvc.perform(get("/api/posts/" + postRead.getId() + 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
         .andDo(print());
   }
 
@@ -217,7 +256,36 @@ class PostApiControllerTest {
   }
 
   @Test
-  @DisplayName("글 삭제")
+  @DisplayName("게시글 수정 - 존재하지 않는 게시글 수정")
+  void 게시글_수정_실패() throws Exception {
+    // given
+    Post post = Post.builder()
+        .title("수정 전 title")
+        .content("수정 전 content")
+        .build();
+
+    PostCreate postCreate = PostCreate.builder()
+        .title(post.getTitle())
+        .content(post.getContent())
+        .build();
+
+    PostRead postRead = postService.write(postCreate);
+
+    PostEdit edit = PostEdit.builder()
+        .title("수정 후 title")
+        .content("수정 전 content")
+        .build();
+
+    // when & then
+    mockMvc.perform(patch("/api/posts/" + postRead.getId() + 1L)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(edit)))
+        .andExpect(status().isNotFound())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("게시글 삭제")
   void delete_post() throws Exception {
     // given
     Post post = Post.builder()
@@ -236,8 +304,29 @@ class PostApiControllerTest {
     mockMvc.perform(delete("/api/posts/" + postRead.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-
         .andDo(print());
   }
 
+  @Test
+  @DisplayName("게시글 삭제 - 존재하지 않는 게시글 삭제")
+  void 게시글_삭제_실패() throws Exception {
+    // given
+    Post post = Post.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    PostCreate postCreate = PostCreate.builder()
+        .title(post.getTitle())
+        .content(post.getContent())
+        .build();
+
+    PostRead postRead = postService.write(postCreate);
+
+    // when & then
+    mockMvc.perform(delete("/api/posts/" + postRead.getId() + 1L)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andDo(print());
+  }
 }

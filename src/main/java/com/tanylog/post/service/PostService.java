@@ -1,6 +1,6 @@
 package com.tanylog.post.service;
 
-import com.tanylog.exception.PostNotFound;
+import com.tanylog.exception.customException.PostNotFound;
 import com.tanylog.post.controller.request.PostCreate;
 import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;

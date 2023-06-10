@@ -1,10 +1,9 @@
 package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.tanylog.exception.PostNotFound;
+import com.tanylog.exception.customException.PostNotFound;
 import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
@@ -14,9 +13,6 @@ import com.tanylog.post.repository.PostRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

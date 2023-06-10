@@ -28,6 +28,7 @@ public class PostApiController {
   @PostMapping("/api/posts")
   public PostRead post(@RequestBody @Valid PostCreate postCreate) {
     log.info("postRequest={}", postCreate.toString());
+    postCreate.validate();
     return postService.write(postCreate);
   }
 
