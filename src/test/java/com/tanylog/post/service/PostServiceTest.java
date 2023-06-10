@@ -2,7 +2,9 @@ package com.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
+import static org.junit.jupiter.api.Assertions.*;
 
+import com.tanylog.exception.PostNotFound;
 import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
 import com.tanylog.post.controller.response.PostRead;
@@ -14,7 +16,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -59,13 +63,30 @@ class PostServiceTest {
         .content("content")
         .build();
 
-    // when
     postRepository.save(post);
+
+    // when
     PostRead findPost = postService.read(post.getId());
 
     // then
     assertThat(findPost.getTitle()).isEqualTo("title");
     assertThat(findPost.getContent()).isEqualTo("content");
+  }
+
+  @Test
+  @DisplayName("게시글 단건 조회 - 존재하지 않는 글")
+  void 게시글_단건조회_실패() {
+    Post post = Post.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    Post save = postRepository.save(post);
+
+    // when & then
+    assertThrows(PostNotFound.class, () -> {
+      postService.read(save.getId() + 1L);
+    });
   }
 
   @Test
@@ -146,6 +167,28 @@ class PostServiceTest {
   }
 
   @Test
+  @DisplayName("게시글 내용 수정 - 존재하지 않는 글")
+  void 게시글_수정_실패() {
+    // given
+    Post post = Post.builder()
+        .title("수정 전 title")
+        .content("수정 전 content")
+        .build();
+
+    Post save = postRepository.save(post);
+
+    PostEdit edit = PostEdit.builder()
+        .title("수정 전 title")
+        .content("수정 후 content")
+        .build();
+
+    // when & then
+    assertThrows(PostNotFound.class, () -> {
+      postService.edit(save.getId() + 1L, edit);
+    });
+  }
+
+  @Test
   void 게시글_삭제() {
     // given
     List<Post> posts = postRepository.saveAll(IntStream.range(0, 2)
@@ -163,4 +206,20 @@ class PostServiceTest {
     assertThat(postRepository.findAll().get(0).getTitle()).isEqualTo("title 1");
   }
 
+  @Test
+  @DisplayName("게시글 삭제 - 존재하지 않는 ")
+  void 게시글_삭제_실패() {
+    // given
+    Post post = Post.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    Post save = postRepository.save(post);
+
+    // when & then
+    assertThrows(PostNotFound.class, () -> {
+      postService.delete(save.getId() + 1L);
+    });
+  }
 }

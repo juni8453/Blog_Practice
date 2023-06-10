@@ -1,5 +1,6 @@
 package com.tanylog.post.service;
 
+import com.tanylog.exception.PostNotFound;
 import com.tanylog.post.controller.request.PostCreate;
 import com.tanylog.post.controller.request.PostEdit;
 import com.tanylog.post.controller.request.PostSearch;
@@ -40,7 +41,7 @@ public class PostService {
 
   public PostRead read(Long postId) {
     Post findPost = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글입니다."));
+        .orElseThrow(PostNotFound::new);
 
     return PostRead.builder()
         .id(findPost.getId())
@@ -66,7 +67,7 @@ public class PostService {
   @Transactional
   public void edit(Long postId, PostEdit postEdit) {
     Post findPost = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글입니다."));
+        .orElseThrow(PostNotFound::new);
 
     // 결론) 최초 builder 호출 시점에 null 체크 해줘야한다.
     PostEditorBuilder postEditorBuilder = findPost.toEditor();
@@ -82,7 +83,7 @@ public class PostService {
   @Transactional
   public void delete(Long postId) {
     Post findPost = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글입니다."));
+        .orElseThrow(PostNotFound::new);
 
     postRepository.delete(findPost);
   }
