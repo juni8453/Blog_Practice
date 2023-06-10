@@ -9,6 +9,7 @@ import com.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -44,5 +45,10 @@ public class PostApiController {
   @PatchMapping("/api/posts/{postId}")
   public void edit(@PathVariable Long postId, @RequestBody @Valid PostEdit postEdit) {
     postService.edit(postId, postEdit);
+  }
+
+  @DeleteMapping("/api/posts/{postId}")
+  public void delete(@PathVariable Long postId) {
+    postService.delete(postId);
   }
 }

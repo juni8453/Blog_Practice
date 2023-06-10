@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +28,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -213,4 +215,29 @@ class PostApiControllerTest {
         .andExpect(status().isOk())
         .andDo(print());
   }
+
+  @Test
+  @DisplayName("글 삭제")
+  void delete_post() throws Exception {
+    // given
+    Post post = Post.builder()
+        .title("title")
+        .content("content")
+        .build();
+
+    PostCreate postCreate = PostCreate.builder()
+        .title(post.getTitle())
+        .content(post.getContent())
+        .build();
+
+    PostRead postRead = postService.write(postCreate);
+
+    // when & then
+    mockMvc.perform(delete("/api/posts/" + postRead.getId())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+
+        .andDo(print());
+  }
+
 }

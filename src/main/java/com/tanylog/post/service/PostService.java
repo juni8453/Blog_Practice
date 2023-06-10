@@ -78,4 +78,12 @@ public class PostService {
 
     findPost.edit(postEditor);
   }
+
+  @Transactional
+  public void delete(Long postId) {
+    Post findPost = postRepository.findById(postId)
+        .orElseThrow(() -> new IllegalArgumentException("찾을 수 없는 게시글입니다."));
+
+    postRepository.delete(findPost);
+  }
 }

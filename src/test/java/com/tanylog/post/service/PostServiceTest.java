@@ -144,4 +144,23 @@ class PostServiceTest {
     assertThat(edited.getTitle()).isEqualTo("수정 전 title");
     assertThat(edited.getContent()).isEqualTo("수정 후 content");
   }
+
+  @Test
+  void 게시글_삭제() {
+    // given
+    List<Post> posts = postRepository.saveAll(IntStream.range(0, 2)
+        .mapToObj(i -> Post.builder()
+            .title("title " + i)
+            .content("content " + i)
+            .build())
+        .collect(Collectors.toList()));
+
+    // when
+    postService.delete(posts.get(0).getId());
+
+    // then
+    assertThat(postRepository.count()).isEqualTo(1);
+    assertThat(postRepository.findAll().get(0).getTitle()).isEqualTo("title 1");
+  }
+
 }
