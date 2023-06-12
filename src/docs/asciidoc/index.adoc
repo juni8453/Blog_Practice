@@ -4,11 +4,33 @@
 == 게시글 단건 조회
 
 === 요청
-include::{snippets}/index/http-request.adoc[]
+include::{snippets}/post-read/http-request.adoc[]
+
+=== 요청 Parameter
+include::{snippets}/post-read/path-parameters.adoc[]
 
 === 응답
-include::{snippets}/index/http-response.adoc[]
+include::{snippets}/post-read/http-response.adoc[]
+
+=== 응답 Parameter
+include::{snippets}/post-read/response-fields.adoc[]
 
 === CURL
-include::{snippets}/index/curl-request.adoc[]
+include::{snippets}/post-read/curl-request.adoc[]
 
+== 게시글 작성
+
+=== 요청
+include::{snippets}/post-create/http-request.adoc[]
+
+=== 요청 Parameter
+include::{snippets}/post-create/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/post-create/http-response.adoc[]
+
+=== 응답 Parameter
+include::{snippets}/post-create/response-fields.adoc[]
+
+=== CURL
+include::{snippets}/post-create/curl-request.adoc[]
