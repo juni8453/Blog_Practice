@@ -1,5 +1,6 @@
 package com.tanylog.exception.response;
 
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +27,7 @@ public class ErrorResponse {
   public ErrorResponse(String code, String message, Map<String, String> validation) {
     this.code = code;
     this.message = message;
-    this.validation = validation;
+    this.validation = validation != null ? validation : new HashMap<>();
   }
 
   public void addValidation(String field, String errorMessage) {
