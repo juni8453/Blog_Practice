@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,8 +94,9 @@ public class PostApiControllerDocTest {
         .andExpect(status().isOk())
         .andDo(document("post-create",
             requestFields(
-                fieldWithPath("title").description("게시글 제목"),
-                fieldWithPath("content").description("게시글 내용")
+                fieldWithPath("title").description("게시글 제목")
+                    .attributes(key("constraint").value("좋은 제목 입력해주세요.")),
+                fieldWithPath("content").description("게시글 내용").optional()
             ),
             responseFields(
                 fieldWithPath("id").description("게시글 ID"),
